@@ -5,7 +5,7 @@ from .exceptions import handle_error_response, TDAAPIError
 from .urls import (
     # --ORDERS--
     CANCEL_ORDER,
-    # GET_ORDER,
+    GET_ORDER,
     # GET_ORDERS_BY_PATH,
     GET_ORDER_BY_QUERY,
     PLACE_ORDER,
@@ -488,6 +488,9 @@ class TDClient(object):
 
         return self._request(MOVERS.format(index=index), params=params).json()
 
+    def get_order(self, accountId, orderId):
+        return self._request(GET_ORDER.format(accountId=accountId, orderId=orderId), method='GET').json()
+
     def orders(
         self,
         accountId=None,
@@ -544,7 +547,7 @@ class TDClient(object):
             order (JSON): order instance to place
         """
         return self._request(
-            PLACE_ORDER.format(accountId=accountId), method="POST", json=order
+            PLACE_ORDER.format(accountId=accountId), method="POST", data=order
         )
 
     def replaceOrder(self, accountId, orderId, order):

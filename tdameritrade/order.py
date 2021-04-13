@@ -13,11 +13,12 @@ class OrderBuilder(object):
         orderType="MARKET",
         orderStrategyType="SINGLE",
         complexOrderStrategyType="NONE",
+        session="NORMAL",
         specialInstruction=None,
         requestedDestination="AUTO",
         priceLinkBasis=None,
         priceLinkType=None,
-        stopPrice=0.0,
+        stopPrice=None,
         stopPriceLinkBasis=None,
         stopPriceLinkType=None,
         stopType=None,
@@ -27,22 +28,25 @@ class OrderBuilder(object):
             raise TDAAPIError("Duration must be in {}".format(duration))
 
         self._rep = {
-            "duration": duration,
-            "orderType": orderType,
             "complexOrderStrategyType": complexOrderStrategyType,
-            "requestedDestination": requestedDestination,
-            "stopPrice": 0,
-            "stopPriceLinkBasis": stopPriceLinkBasis,
-            "stopPriceLinkType": stopPriceLinkType,
-            "stopPriceOffset": 0,
-            "stopType": stopType,
-            "priceLinkBasis": priceLinkBasis,
-            "priceLinkType": priceLinkType,
-            "price": price,
-            "taxLotMethod": taxLotMethod,
-            "orderLegCollection": [],
-            "specialInstruction": specialInstruction,
+            "orderType": orderType,
+            "session": session,
+            "price": str(price),
+            "duration": duration,
             "orderStrategyType": orderStrategyType,
+            "orderLegCollection": [],
+            # "requestedDestination": requestedDestination,
+            # "stopPrice": 0,
+            # "stopPriceLinkBasis": stopPriceLinkBasis,
+            # "stopPriceLinkType": stopPriceLinkType,
+            # "stopPriceOffset": 0,
+            # "stopType": stopType,
+            # "priceLinkBasis": priceLinkBasis,
+            # "priceLinkType": priceLinkType,
+            #
+            # "taxLotMethod": taxLotMethod,
+
+            # "specialInstruction": specialInstruction,
         }
 
     def addLeg(
@@ -79,6 +83,18 @@ class OrderBuilder(object):
         #     leg['instrument']['maturityDate'] = maturityDate
         #     leg['instrument']['variableRate'] = variableRate
         #     leg['instrument']['factor'] = factor
+        self._rep["orderLegCollection"].append(leg)
+
+    def addOptionLeg(self, symbol, instruction, quantity):
+        leg = {
+            "instruction": instruction,
+            "quantity": quantity,
+            "instrument": {
+                "symbol": symbol,
+                "assetType": 'OPTION',
+            }
+        }
+
         self._rep["orderLegCollection"].append(leg)
 
     def to_json(self):

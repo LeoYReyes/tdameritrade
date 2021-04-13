@@ -20,6 +20,7 @@ class TDASession(requests.Session):
 
     def request(self, *args, **kwargs):
         self._refresh_token_if_invalid()
+        self._headers.update({"Content-Type": "application/json"})
         return super().request(headers=self._headers, *args, **kwargs)
 
     def _is_token_invalid(self):
